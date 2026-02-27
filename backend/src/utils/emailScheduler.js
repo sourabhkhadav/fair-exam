@@ -11,12 +11,22 @@ export const startEmailScheduler = () => {
         if (isRunning) {
             return;
         }
-        
+
         isRunning = true;
         try {
             const now = new Date();
-            const currentDate = now.toISOString().split('T')[0];
-            const currentTime = now.toTimeString().slice(0, 5);
+            // Convert to IST (+5:30) securely
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            const istTime = new Date(now.getTime() + istOffset);
+
+            const year = istTime.getUTCFullYear();
+            const month = String(istTime.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(istTime.getUTCDate()).padStart(2, '0');
+            const hours = String(istTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(istTime.getUTCMinutes()).padStart(2, '0');
+
+            const currentDate = `${year}-${month}-${day}`;
+            const currentTime = `${hours}:${minutes}`;
 
             const scheduledExams = await Exam.find({
                 status: 'published',
@@ -27,7 +37,7 @@ export const startEmailScheduler = () => {
 
             for (const exam of scheduledExams) {
                 const candidates = await Candidate.find({ examId: exam._id });
-                
+
                 if (candidates.length === 0) continue;
 
                 const examDetails = {
@@ -61,7 +71,7 @@ export const startEmailScheduler = () => {
 
             for (const exam of startingExams) {
                 const candidates = await Candidate.find({ examId: exam._id });
-                
+
                 if (candidates.length === 0) continue;
 
                 const examDetails = {
@@ -81,7 +91,7 @@ export const startEmailScheduler = () => {
                             candidate.password = password;
                             await candidate.save();
                         }
-                        
+
                         try {
                             const candidateDetails = {
                                 name: candidate.name,
