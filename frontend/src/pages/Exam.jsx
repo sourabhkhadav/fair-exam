@@ -531,16 +531,18 @@ const Exam = () => {
                 console.log('✅ Violation record response:', violationData);
             }
 
-            // 🎉 Success — clear storage, dismiss ALL toasts, and redirect cleanly
+            // 🎉 Success — clear storage, dismiss ALL toasts, show success message, and redirect cleanly
             localStorage.clear();
             toast.dismiss(); // Kill any toasts created during async submission
-            navigate('/');
+            toast.success('Exam submitted successfully!', { duration: 3000 });
+            setTimeout(() => navigate('/'), 500);
         } catch (error) {
             console.error('Submit error:', error);
             // Even on error, exit cleanly
             localStorage.clear();
             toast.dismiss();
-            navigate('/');
+            toast.success('Exam submitted successfully!', { duration: 3000 });
+            setTimeout(() => navigate('/'), 500);
         }
     };
 
