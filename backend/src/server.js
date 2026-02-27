@@ -52,3 +52,5 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   startEmailScheduler();
 });
+
+export default app;
