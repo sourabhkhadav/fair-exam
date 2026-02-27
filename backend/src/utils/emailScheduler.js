@@ -69,7 +69,10 @@ export const startEmailScheduler = () => {
                 examStartEmailSent: false
             });
 
+            console.log(`[EmailScheduler] Found ${startingExams.length} starting exams for ${currentDate} <= ${currentTime}`);
+
             for (const exam of startingExams) {
+                console.log(`[EmailScheduler] Processing exam: ${exam.title} (${exam._id})`);
                 const candidates = await Candidate.find({ examId: exam._id });
 
                 if (candidates.length === 0) continue;
@@ -99,8 +102,9 @@ export const startEmailScheduler = () => {
                                 password: candidate.password
                             };
                             await sendExamStartEmail(candidate.email, examDetails, candidateDetails);
+                            console.log(`[EmailScheduler] Successfully sent start email to ${candidate.email}`);
                         } catch (error) {
-                            console.error(`Failed to send start email to ${candidate.email}`);
+                            console.error(`[EmailScheduler] Failed to send start email to ${candidate.email}:`, error);
                         }
                     }
                 }
@@ -109,7 +113,7 @@ export const startEmailScheduler = () => {
                 await exam.save();
             }
         } catch (error) {
-            // Silently handle errors
+            console.error('[EmailScheduler] Error in scheduler:', error);
         } finally {
             isRunning = false;
         }
