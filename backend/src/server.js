@@ -19,8 +19,8 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL
     : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173'],
   credentials: true
 }));
@@ -48,9 +48,14 @@ app.use('/api/submissions', submissionRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  startEmailScheduler();
-});
 
+// Only start the server and scheduler if NOT running on Vercel
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    startEmailScheduler();
+  });
+}
+
+// Export the app for Vercel serverless
 export default app;
