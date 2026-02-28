@@ -138,14 +138,10 @@ export const sendExamResults = asyncHandler(async (req, res) => {
         throw new Error('Results have already been sent for this exam');
     }
 
-    // Server is in UTC on Render, convert to IST for comparison
     const now = new Date();
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istNow = new Date(now.getTime() + istOffset);
-
     const examEndDateTime = new Date(`${exam.endDate}T${exam.endTime}`);
 
-    if (istNow < examEndDateTime) {
+    if (now < examEndDateTime) {
         res.status(400);
         throw new Error('Cannot send results before exam end time');
     }
