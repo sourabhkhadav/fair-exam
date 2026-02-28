@@ -10,7 +10,6 @@ import candidateRoutes from './routes/candidateRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import submissionRoutes from './routes/submissionRoutes.js';
-import healthRoutes from './routes/healthRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 import './config/email.js';
 import { startEmailScheduler } from './utils/emailScheduler.js';
@@ -45,19 +44,14 @@ app.use(express.json({ limit: '10mb' }));
 connectDB();
 
 app.get('/', (req, res) => {
-  res.json({ message: 'FairExam API is running' });
-});
-
-app.get('/api/health/ping', (req, res) => {
-  res.status(200).json({
+  res.json({ 
     success: true,
     status: 'ok',
-    message: 'Server is running',
+    message: 'FairExam API is running',
     timestamp: new Date().toISOString()
   });
 });
 
-app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/violations', violationRoutes);
