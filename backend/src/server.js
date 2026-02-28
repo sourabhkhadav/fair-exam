@@ -48,6 +48,15 @@ app.get('/', (req, res) => {
   res.json({ message: 'FairExam API is running' });
 });
 
+app.get('/api/health/ping', (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: 'ok',
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exams', examRoutes);
