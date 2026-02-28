@@ -48,10 +48,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'FairExam API is running' });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', routes: 'registered', timestamp: new Date().toISOString() });
-});
-
+app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/violations', violationRoutes);
@@ -59,7 +56,6 @@ app.use('/api/candidates', candidateRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/submissions', submissionRoutes);
-app.use('/api/health', healthRoutes);
 
 app.use(errorHandler);
 
