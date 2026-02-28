@@ -10,6 +10,7 @@ import candidateRoutes from './routes/candidateRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import submissionRoutes from './routes/submissionRoutes.js';
+import healthRoutes from './routes/healthRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 import './config/email.js';
 import { startEmailScheduler } from './utils/emailScheduler.js';
@@ -58,6 +59,7 @@ app.use('/api/candidates', candidateRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/submissions', submissionRoutes);
+app.use('/api/health', healthRoutes);
 
 app.use(errorHandler);
 
