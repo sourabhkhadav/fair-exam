@@ -65,12 +65,15 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 // Only start the server and scheduler if NOT running on Vercel
-if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    startEmailScheduler();
-  });
-}
+// if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+//   app.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+//     startEmailScheduler();
+//   });
+// }
+
+
+
 
 // Export the app for Vercel serverless
 export default app;
