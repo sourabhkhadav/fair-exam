@@ -35,16 +35,21 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
+    // If origin is recognized, allow it
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Don't throw a 500 error on preflight. Just echo the origin back.
+      callback(null, origin);
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
+
+// Explicitly handle all OPTIONS requests to ensure 204 No Content response
+app.options('*', cors());
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 

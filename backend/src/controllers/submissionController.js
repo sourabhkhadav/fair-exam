@@ -139,7 +139,18 @@ export const sendExamResults = asyncHandler(async (req, res) => {
     }
 
     const now = new Date();
-    const examEndDateTime = new Date(`${exam.endDate}T${exam.endTime}`);
+
+    // Convert the exam's string dates into actual Date objects for comparison
+    const start = new Date(`${exam.startDate}T${exam.startTime}`);
+    let examEndDateTime;
+
+    if (exam.endDate && exam.endTime) {
+        examEndDateTime = new Date(`${exam.endDate}T${exam.endTime}`);
+    } else if (exam.duration) {
+        examEndDateTime = new Date(start.getTime() + exam.duration * 60000);
+    } else {
+        examEndDateTime = new Date(start.getTime() + 60 * 60000); // 1 hour default
+    }
 
     if (now < examEndDateTime) {
         res.status(400);

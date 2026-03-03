@@ -129,15 +129,7 @@ export const candidateLogin = async (req, res) => {
             return res.status(404).json({ message: 'Exam not found' });
         }
 
-        // Get current time, adjusting for Vercel's UTC timezone if in production
-        let now;
-        if (process.env.NODE_ENV === 'production') {
-            const nowUTC = new Date();
-            const istOffset = 5.5 * 60 * 60 * 1000;
-            now = new Date(nowUTC.getTime() + istOffset);
-        } else {
-            now = new Date(); // Localhost uses local timezone automatically
-        }
+        const now = new Date();
 
         // Convert the exam's string dates into actual Date objects for comparison
         const start = new Date(`${exam.startDate}T${exam.startTime}`);
