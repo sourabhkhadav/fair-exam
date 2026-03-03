@@ -7,16 +7,16 @@ const router = express.Router();
 // Test route (no auth for testing)
 router.post('/test', sendTest);
 
-// Cron route (no auth, triggered by Vercel Cron)
-router.get('/cron', async (req, res) => {
+// UptimeRobot Worker Route (no auth, triggered by external ping)
+router.get('/worker', async (req, res) => {
     try {
         // We import the logic here to avoid circular dependencies if any
         const { processScheduledEmails } = await import('../utils/emailScheduler.js');
         await processScheduledEmails();
-        res.status(200).json({ success: true, message: 'Cron job executed successfully' });
+        res.status(200).json({ success: true, message: 'Worker processed successfully' });
     } catch (error) {
-        console.error('Cron job failed:', error);
-        res.status(500).json({ success: false, message: 'Cron job failed', error: error.message });
+        console.error('Worker failed:', error);
+        res.status(500).json({ success: false, message: 'Worker failed', error: error.message });
     }
 });
 

@@ -34,11 +34,5 @@
       "src": "/(.*)",
       "dest": "src/server.js"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/email/cron",
-      "schedule": "* * * * *"
-    }
   ]
 }
