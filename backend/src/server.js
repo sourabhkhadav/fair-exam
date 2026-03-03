@@ -33,23 +33,38 @@ const allowedOrigins = [
 //   process.env.FRONTEND_URL
 // ].filter(Boolean);
 
+// Custom CORS middleware to guarantee preflight (OPTIONS) requests always return HTTP 200 OK
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+
+  // Intercept OPTIONS method
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  next();
+});
+
+// We can still keep the cors library as a fallback for the actual routes
 app.use(cors({
   origin: function (origin, callback) {
-    // If origin is recognized, allow it
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      // Don't throw a 500 error on preflight. Just echo the origin back.
       callback(null, origin);
     }
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+  credentials: true
 }));
-
-// Explicitly handle all OPTIONS requests to ensure 204 No Content response
-app.options('*', cors());
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 

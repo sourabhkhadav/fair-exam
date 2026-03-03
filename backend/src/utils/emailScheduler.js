@@ -9,7 +9,14 @@ export const processScheduledEmails = async () => {
 
     isRunning = true;
     try {
-        const now = new Date();
+        let now;
+        if (process.env.NODE_ENV === 'production') {
+            const nowUTC = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            now = new Date(nowUTC.getTime() + istOffset);
+        } else {
+            now = new Date();
+        }
 
         const currentDate = now.toISOString().split('T')[0];
         const currentTime = now.toTimeString().slice(0, 5);

@@ -456,7 +456,14 @@ export const getExamsForResults = asyncHandler(async (req, res) => {
         .sort({ createdAt: -1 })
         .select('title startDate endDate endTime status createdAt totalMarks resultsSent');
 
-    const now = new Date();
+    let now;
+    if (process.env.NODE_ENV === 'production') {
+        const nowUTC = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000;
+        now = new Date(nowUTC.getTime() + istOffset);
+    } else {
+        now = new Date(); // Localhost uses local timezone automatically
+    }
 
     const examsWithStats = await Promise.all(
         exams.map(async (exam) => {
