@@ -129,9 +129,30 @@ export const candidateLogin = async (req, res) => {
             return res.status(404).json({ message: 'Exam not found' });
         }
 
-        const now = new Date();
+        // Get current time, adjusting for Vercel's UTC timezone if in production
+        let now;
+        if (process.env.NODE_ENV === 'production') {
+            const nowUTC = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            now = new Date(nowUTC.getTime() + istOffset);
+        } else {
+            now = new Date(); // Localhost uses local timezone automatically
+        }
+
+        // Convert the exam's string dates into actual Date objects for comparison
         const start = new Date(`${exam.startDate}T${exam.startTime}`);
-        const end = new Date(`${exam.endDate}T${exam.endTime}`);
+        let end;
+
+        // Handle case where exam.endDate might not be set (legacy support)
+        if (exam.endDate && exam.endTime) {
+            end = new Date(`${exam.endDate}T${exam.endTime}`);
+        } else if (exam.duration) {
+            // Calculate end time based on duration if endDate doesn't exist
+            end = new Date(start.getTime() + exam.duration * 60000);
+        } else {
+            // Fallback if neither exists
+            end = new Date(start.getTime() + 60 * 60000); // 1 hour default
+        }
 
         if (now < start) {
             return res.status(403).json({ message: 'Exam has not started yet' });

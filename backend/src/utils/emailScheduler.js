@@ -6,10 +6,19 @@ let isRunning = false;
 
 export const processScheduledEmails = async () => {
     if (isRunning) return;
-    
+
     isRunning = true;
     try {
-        const now = new Date();
+        let now;
+        if (process.env.NODE_ENV === 'production') {
+            // Get current UTC time, but convert it to IST (+5:30) for comparison
+            const nowUTC = new Date();
+            const istOffset = 5.5 * 60 * 60 * 1000;
+            now = new Date(nowUTC.getTime() + istOffset);
+        } else {
+            now = new Date();
+        }
+
         const currentDate = now.toISOString().split('T')[0];
         const currentTime = now.toTimeString().slice(0, 5);
 
@@ -22,7 +31,7 @@ export const processScheduledEmails = async () => {
 
         for (const exam of scheduledExams) {
             const candidates = await Candidate.find({ examId: exam._id });
-            
+
             if (candidates.length === 0) continue;
 
             const examDetails = {
@@ -56,7 +65,7 @@ export const processScheduledEmails = async () => {
 
         for (const exam of startingExams) {
             const candidates = await Candidate.find({ examId: exam._id });
-            
+
             if (candidates.length === 0) continue;
 
             const examDetails = {
@@ -76,7 +85,7 @@ export const processScheduledEmails = async () => {
                         candidate.password = password;
                         await candidate.save();
                     }
-                    
+
                     try {
                         const candidateDetails = {
                             name: candidate.name,
