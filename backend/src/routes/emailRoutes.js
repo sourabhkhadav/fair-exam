@@ -1,5 +1,5 @@
 import express from 'express';
-import { sendTest, sendNotification, sendViolation, sendResult, sendBulkInvitation, sendCancellationEmail } from '../controllers/emailController.js';
+import { sendTest, sendNotification, sendViolation, sendResult, sendBulkInvitation, sendCancellationEmail, sendStartCredentials } from '../controllers/emailController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -27,5 +27,6 @@ router.post('/violation-alert', sendViolation);
 router.post('/result', sendResult);
 router.post('/bulk-invitation/:examId', sendBulkInvitation);
 router.post('/cancel-exam/:examId', sendCancellationEmail);
+router.post('/send-credentials/:examId', sendStartCredentials);
 
 export default router;

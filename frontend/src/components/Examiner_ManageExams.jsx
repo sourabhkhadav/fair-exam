@@ -267,7 +267,7 @@ const Examiner_ManageExams = () => {
                                             <span className="text-xs font-bold uppercase sm:hidden">Configure</span>
                                         </button>
                                     )}
-                                    {exam.status !== 'Live' && (
+                                    {exam.status !== 'Live' && exam.status !== 'Scheduled' && exam.status !== 'Finished' && (
                                         <>
                                             <button
                                                 onClick={() => handleEdit(exam)}
@@ -276,14 +276,46 @@ const Examiner_ManageExams = () => {
                                             >
                                                 <Edit3 className="w-5 h-5" />
                                             </button>
-                                            <button
-                                                onClick={() => handleDelete(exam.id)}
-                                                className="flex-1 sm:flex-none p-3 text-[#EF4444] hover:bg-[#FEF2F2] rounded-xl transition-colors cursor-pointer flex justify-center"
-                                                title="Delete Exam"
-                                            >
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
                                         </>
+                                    )}
+                                    {['Scheduled', 'Live', 'Public'].includes(exam.status) && (
+                                        <button
+                                            onClick={async () => {
+                                                const confirmed = window.confirm('Send login credentials to all candidates now?');
+                                                if (!confirmed) return;
+
+                                                try {
+                                                    const toastId = toast.loading('Sending credentials...');
+                                                    const token = localStorage.getItem('token');
+                                                    const response = await fetch(`${API_BASE_URL}/email/send-credentials/${exam.id}`, {
+                                                        method: 'POST',
+                                                        headers: { 'Authorization': `Bearer ${token}` }
+                                                    });
+                                                    const data = await response.json();
+
+                                                    if (response.ok) {
+                                                        toast.success(data.message || 'Credentials sent successfully!', { id: toastId });
+                                                    } else {
+                                                        toast.error(data.message || 'Failed to send credentials', { id: toastId });
+                                                    }
+                                                } catch (error) {
+                                                    toast.error('An error occurred while sending emails');
+                                                }
+                                            }}
+                                            className="flex-1 sm:flex-none p-3 text-[#6366F1] hover:bg-[#EEF2FF] rounded-xl transition-colors cursor-pointer flex justify-center items-center gap-2"
+                                            title="Send Login Credentials"
+                                        >
+                                            <Mail className="w-5 h-5" />
+                                        </button>
+                                    )}
+                                    {exam.status !== 'Live' && (
+                                        <button
+                                            onClick={() => handleDelete(exam.id)}
+                                            className="flex-1 sm:flex-none p-3 text-[#EF4444] hover:bg-[#FEF2F2] rounded-xl transition-colors cursor-pointer flex justify-center"
+                                            title="Delete Exam"
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                        </button>
                                     )}
                                 </div>
                             </div>

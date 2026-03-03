@@ -855,7 +855,13 @@ export const sendExamStartEmail = async (to, examDetails, candidateDetails) => {
         return `${formatDate(endDateTime.toISOString().split('T')[0])} at ${formatTime(endDateTime.toTimeString().slice(0, 5))}`;
     };
 
-    const examUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/candidate-login?examId=${examDetails.examId}&candidateId=${candidateDetails.candidateId}`;
+    // URL for deployed frontend (Active)
+    const baseUrl = process.env.FRONTEND_URL || 'https://fair-exam.vercel.app';
+
+    // URL for local frontend (Commented out)
+    // const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    const examUrl = `${baseUrl}/candidate-login?examId=${examDetails.examId}&candidateId=${candidateDetails.candidateId}`;
 
     const mailOptions = {
         from: process.env.EMAIL_FROM || 'FairExam <sourabhkhadav2@gmail.com>',

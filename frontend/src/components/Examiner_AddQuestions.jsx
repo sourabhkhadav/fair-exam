@@ -351,9 +351,15 @@ const Examiner_AddQuestions = () => {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={handleSaveDraft}
-                        className="flex-1 sm:flex-none justify-center px-6 py-3 bg-white border border-[#E2E8F0] text-[#1E293B] font-semibold text-[14px] rounded-2xl hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all flex items-center gap-2.5 shadow-sm active:scale-95 whitespace-nowrap"
+                        disabled={isLoading}
+                        className="flex-1 sm:flex-none justify-center px-6 py-3 bg-white border border-[#E2E8F0] text-[#1E293B] font-semibold text-[14px] rounded-2xl hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all flex items-center gap-2.5 shadow-sm active:scale-95 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Save className="w-4 h-4 text-[#64748B]" /> Save Draft
+                        {isLoading ? (
+                            <Sparkles className="w-4 h-4 text-[#64748B] animate-spin" />
+                        ) : (
+                            <Save className="w-4 h-4 text-[#64748B]" />
+                        )}
+                        {isLoading ? 'Saving...' : 'Save Draft'}
                     </button>
                 </div>
             </div>

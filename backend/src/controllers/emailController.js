@@ -177,3 +177,72 @@ export const sendCancellationEmail = asyncHandler(async (req, res) => {
         results
     });
 });
+
+// @desc    Send exam start credentials manually
+// @route   POST /api/email/send-credentials/:examId
+// @access  Private
+export const sendStartCredentials = asyncHandler(async (req, res) => {
+    const exam = await Exam.findById(req.params.examId);
+
+    if (!exam) {
+        res.status(404);
+        throw new Error('Exam not found');
+    }
+
+    const candidates = await Candidate.find({ examId: req.params.examId });
+
+    if (candidates.length === 0) {
+        res.status(400);
+        throw new Error('No candidates found for this exam');
+    }
+
+    const examDetails = {
+        examId: exam._id,
+        title: exam.title,
+        startDate: exam.startDate || 'TBD',
+        startTime: exam.startTime || 'TBD',
+        duration: exam.duration || 0
+    };
+
+    const results = { sent: 0, failed: 0, emails: [] };
+
+    for (const candidate of candidates) {
+        if (candidate.email) {
+            // Generate credentials if they don't exist
+            if (!candidate.candidateId || !candidate.password) {
+                const candidateId = `CAND${exam._id.toString().slice(-4)}${String(candidates.indexOf(candidate) + 1).padStart(4, '0')}`;
+                const password = Math.random().toString(36).slice(-8).toUpperCase();
+                candidate.candidateId = candidateId;
+                candidate.password = password;
+                await candidate.save();
+            }
+
+            try {
+                const candidateDetails = {
+                    name: candidate.name,
+                    candidateId: candidate.candidateId,
+                    password: candidate.password
+                };
+                // Need to import sendExamStartEmail at top of file, adding it below
+                const { sendExamStartEmail } = await import('../utils/emailService.js');
+                await sendExamStartEmail(candidate.email, examDetails, candidateDetails);
+                results.sent++;
+                results.emails.push(candidate.email);
+            } catch (error) {
+                console.error(`Failed to send start email to ${candidate.email}:`, error);
+                results.failed++;
+            }
+        }
+    }
+
+    // Mark as sent so scheduler doesn't send duplicate
+    exam.examStartEmailSent = true;
+    exam.emailSent = true;
+    await exam.save();
+
+    res.status(200).json({
+        success: true,
+        message: `Credentials sent to ${results.sent} candidates`,
+        results
+    });
+});
