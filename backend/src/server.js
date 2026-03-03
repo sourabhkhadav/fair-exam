@@ -18,14 +18,20 @@ dotenv.config();
 
 const app = express();
 
+// URLs for deployed frontend (Active)
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5173',
   'https://fair-exam.vercel.app',
   'https://fair-exam.vercel.app/',
   process.env.FRONTEND_URL
 ].filter(Boolean);
+
+// URLs for local frontend (Commented out)
+// const allowedOrigins = [
+//   'http://localhost:5173',
+//   'http://localhost:5174',
+//   'http://127.0.0.1:5173',
+//   process.env.FRONTEND_URL
+// ].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -45,7 +51,7 @@ app.use(express.json({ limit: '10mb' }));
 connectDB();
 
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     success: true,
     status: 'ok',
     message: 'FairExam API is running',
