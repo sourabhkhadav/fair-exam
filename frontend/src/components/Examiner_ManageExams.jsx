@@ -278,7 +278,7 @@ const Examiner_ManageExams = () => {
                                             </button>
                                         </>
                                     )}
-                                    {['Scheduled', 'Live', 'Public'].includes(exam.status) && (
+                                    {['Scheduled', 'Live', 'Public'].includes(exam.status) && !exam.examData?.examStartEmailSent && (
                                         <button
                                             onClick={async () => {
                                                 const confirmed = window.confirm('Send login credentials to all candidates now?');
@@ -295,6 +295,16 @@ const Examiner_ManageExams = () => {
 
                                                     if (response.ok) {
                                                         toast.success(data.message || 'Credentials sent successfully!', { id: toastId });
+                                                        setExams(prev => prev.map(e =>
+                                                            e.id === exam.id ? {
+                                                                ...e,
+                                                                examData: {
+                                                                    ...e.examData,
+                                                                    examStartEmailSent: true,
+                                                                    emailSent: true
+                                                                }
+                                                            } : e
+                                                        ));
                                                     } else {
                                                         toast.error(data.message || 'Failed to send credentials', { id: toastId });
                                                     }
